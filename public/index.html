@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amigo Secreto</title>
+
+    <!-- Carregar o jQuery via CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Firebase SDK -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+
+    <!-- Seu app.js -->
+    <script type="module" src="app.js"></script>
+
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: auto; text-align: center; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sorteio de Amigo Secreto</h1>
+
+        <!-- Formulário de Login -->
+        <div id="loginForm">
+            <input type="text" id="name" placeholder="Nome">
+            <input type="email" id="email" placeholder="Digite seu email" required>
+            <input type="password" id="password" placeholder="Digite sua senha" required>
+            <button id="loginBtn">Login</button>
+            <button id="signupBtn">Registrar</button>
+        </div>
+        
+        <div id="sorteioSection" style="display: none;">
+            <p>Bem-vindo, <span id="userName"></span>!</p>
+            <button id="sortearBtn">Sortear Amigo Secreto</button>
+            <p id="amigoSorteado"></p>
+        </div>
+
+        <div id="adminPanel" style="display: none;">
+            <h2>Painel do Administrador</h2>
+            
+            <button id="adminSortearBtn">Realizar Sorteio</button>
+            
+            <h3>Participantes Cadastrados</h3>
+            <table id="participantesTable">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Amigo Secreto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        
+
+    <script src="app.js"></script>
+</body>
+</html>
