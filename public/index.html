@@ -1,66 +1,204 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amigo Secreto</title>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sorteio Amigo Secreto</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    </head>
 
-    <!-- Carregar o jQuery via CDN -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- Firebase SDK -->
     <script type="module" src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
 
-    <!-- Seu app.js -->
-    <script type="module" src="app.js"></script>
-
     <style>
-        body { font-family: Arial, sans-serif; }
-        .container { max-width: 600px; margin: auto; text-align: center; }
-        .hidden { display: none; }
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(45deg, #6e3cbc, #c62d91);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Centraliza o texto */
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .nav a.active {
+            border-bottom: 2px solid #00bfff;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        input {
+            width: 93%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #00bfff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s;
+        }
+
+        .loading-overlay.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .loading-overlay img {
+            width: 80px;
+            height: 80px;
+        }
+
+        #sorteioSection, #adminPanel {
+            display: none;
+        }
     </style>
-</head>
+    <!-- Adicionando jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <body>
     <div class="container">
-        <h1>Sorteio de Amigo Secreto</h1>
-
-        <!-- Formulário de Login -->
-        <div id="loginForm">
-            <input type="text" id="name" placeholder="Nome">
-            <input type="email" id="email" placeholder="Digite seu email" required>
-            <input type="password" id="password" placeholder="Digite sua senha" required>
-            <button id="loginBtn">Login</button>
-            <button id="signupBtn">Registrar</button>
+        <h1 style="color: #fff;">Sorteio Amigo Secreto</h1>
+        <div class="nav">
+            <a href="#" id="loginTab" class="active">Login</a>
+            <a href="#" id="signupTab">Registro</a>
         </div>
-        
-        <div id="sorteioSection" style="display: none;">
-            <p>Bem-vindo, <span id="userName"></span>!</p>
+
+        <div id="loginForm" class="form-section active">
+            <input type="email" id="loginEmail" placeholder="E-mail" required>
+            <input type="password" id="loginPassword" placeholder="Senha" required>
+            <button id="loginBtn">Entrar</button>
+        </div>
+
+        <div id="signupForm" class="form-section" style="display: none;">
+            <input type="text" id="signupName" placeholder="Nome" required>
+            <input type="email" id="signupEmail" placeholder="E-mail" required>
+            <input type="password" id="signupPassword" placeholder="Senha" required>
+            <button id="signupBtn">Cadastrar</button>
+        </div>
+
+        <div id="sorteioSection" class="container" style="display: none;">
+            <h2>Bem-vindo, <span id="userName"></span>!</h2>
             <button id="sortearBtn">Sortear Amigo Secreto</button>
             <p id="amigoSorteado"></p>
         </div>
 
-        <div id="adminPanel" style="display: none;">
-            <h2>Painel do Administrador</h2>
-            
+        <div id="adminPanel" class="container" style="display: none;">
+            <h2>Painel de Administração</h2>
             <button id="adminSortearBtn">Realizar Sorteio</button>
-            
-            <h3>Participantes Cadastrados</h3>
             <table id="participantesTable">
                 <thead>
                     <tr>
                         <th>Nome</th>
                         <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <h3>Resultados do Sorteio</h3>
+            <table id="resultadosTable">
+                <thead>
+                    <tr>
+                        <th>Participante</th>
                         <th>Amigo Secreto</th>
                     </tr>
                 </thead>
-                <tbody>
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
-        
+    </div>
 
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script> <!-- Referência ao seu arquivo app.js -->
+    <script>
+        // Scripts para alternar entre login e registro
+        $("#signupTab").click(function() {
+            $("#loginForm").hide();
+            $("#signupForm").show();
+            $("#signupTab").addClass("active");
+            $("#loginTab").removeClass("active");
+        });
+
+        $("#loginTab").click(function() {
+            $("#signupForm").hide();
+            $("#loginForm").show();
+            $("#loginTab").addClass("active");
+            $("#signupTab").removeClass("active");
+        });
+    </script>
 </body>
 </html>

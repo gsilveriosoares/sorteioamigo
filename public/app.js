@@ -5,53 +5,52 @@ import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, getDoc, quer
 
 // Configuração do Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyD-rq2PqJePznyVKMzvHZqoyH5saomUNXk",
-  authDomain: "sorteadoramigo.firebaseapp.com",
-  projectId: "sorteadoramigo",
-  storageBucket: "sorteadoramigo.appspot.com",
-  messagingSenderId: "400425000378",
-  appId: "1:400425000378:web:6f88c534841971c1805183",
-  measurementId: "G-0GYRQN6260"
+    apiKey: "AIzaSyD-rq2PqJePznyVKMzvHZqoyH5saomUNXk",
+    authDomain: "sorteadoramigo.firebaseapp.com",
+    projectId: "sorteadoramigo",
+    storageBucket: "sorteadoramigo.appspot.com",
+    messagingSenderId: "400425000378",
+    appId: "1:400425000378:web:6f88c534841971c1805183",
+    measurementId: "G-0GYRQN6260"
 };
 
-// Inicializando o Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 // E-mail do administrador
-const adminEmail = "admin@sorteadoramigo.com";
+const adminEmail = "gsilveriosoares@gmail.com";
 
 // Função de login
 $("#loginBtn").click(() => {
-    const email = $("#email").val();
-    const password = $("#password").val();
+    const email = $("#loginEmail").val();
+    const password = $("#loginPassword").val();
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
             $("#loginForm").hide();
             $("#sorteioSection").show();
-            $("#userName").text(user.email);
+            $("#userName").text(user.displayName || user.email); 
             if (user.email === adminEmail) {
-                $("#adminPanel").show(); // Mostrar o painel de gerenciamento para o admin
-                loadAdminPanel(); // Carregar dados no painel de gerenciamento
+                $("#adminPanel").show(); 
+                loadAdminPanel(); 
             } else {
-                showSecretFriend(user.uid);  // Mostrar o amigo secreto sorteado para usuários normais
+                showSecretFriend(user.uid);
             }
         })
         .catch((error) => {
-            alert("Erro no login: " + error.message);
+            toastr.error("Erro no login: " + error.message);
         });
 });
 
 // Função de registro
 $("#signupBtn").click(async () => {
-    const email = $("#email").val();
-    const password = $("#password").val();
-    const name = $("#name").val();  // Capturando o nome do usuário
+    const email = $("#signupEmail").val();
+    const password = $("#signupPassword").val();
+    const name = $("#signupName").val(); 
 
     if (!name || !email) {
-        alert("Nome e e-mail são obrigatórios.");
+        toastr.warning("Nome e e-mail são obrigatórios.");
         return;
     }
 
@@ -59,7 +58,7 @@ $("#signupBtn").click(async () => {
     const q = query(collection(db, "participantes"), where("email", "==", email));
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
-        alert("Este e-mail já está cadastrado!");
+        toastr.warning("Este e-mail já está cadastrado!");
         return;
     }
 
@@ -72,13 +71,13 @@ $("#signupBtn").click(async () => {
                 email: user.email,
                 amigoSorteado: ""  // Inicialmente sem amigo sorteado
             }).then(() => {
-                alert("Usuário registrado com sucesso!");
+                toastr.success("Usuário registrado com sucesso!");
             }).catch((error) => {
-                alert("Erro ao salvar no banco de dados: " + error.message);
+                toastr.error("Erro ao salvar no banco de dados: " + error.message);
             });
         })
         .catch((error) => {
-            alert("Erro no registro: " + error.message);
+            toastr.error("Erro no registro: " + error.message);
         });
 });
 
@@ -95,7 +94,7 @@ function showSecretFriend(userId) {
             }
         }
     }).catch((error) => {
-        console.error("Erro ao verificar o amigo secreto: ", error);
+        toastr.error("Erro ao verificar o amigo secreto: ", error);
     });
 }
 
@@ -122,7 +121,7 @@ $("#adminSortearBtn").click(() => {
         });
 
         if (participantes.length < 2) {
-            alert("É necessário ao menos 2 participantes para realizar o sorteio.");
+            toastr.warning("É necessário ao menos 2 participantes para realizar o sorteio.");
             return;
         }
 
@@ -137,10 +136,10 @@ $("#adminSortearBtn").click(() => {
             });
         });
 
-        alert("Sorteio realizado com sucesso!");
+        toastr.success("Sorteio realizado com sucesso!");
         loadAdminPanel(); // Atualizar o painel de gerenciamento com o sorteio
     }).catch((error) => {
-        console.error("Erro ao pegar os participantes: ", error);
+        toastr.error("Erro ao pegar os participantes: ", error);
     });
 });
 
@@ -204,6 +203,6 @@ function loadAdminPanel() {
         });
         $("#resultadosTable tbody").html(resultadosContent);
     }).catch((error) => {
-        console.error("Erro ao carregar participantes: ", error);
+        toastr.error("Erro ao carregar participantes: ", error);
     });
 }
