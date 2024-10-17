@@ -134,10 +134,10 @@
 <body>
     <div class="container">
         <h1 style="color: #fff;">Sorteio Amigo Secreto</h1>
-        <div class="nav">
+       <!-- <div class="nav">
             <a href="#" id="loginTab" class="active">Login</a>
             <a href="#" id="signupTab">Registro</a>
-        </div>
+        </div> -->
 
         <div id="loginForm" class="form-section active">
             <input type="email" id="loginEmail" placeholder="E-mail" required>
@@ -150,15 +150,15 @@
             <input type="email" id="signupEmail" placeholder="E-mail" required>
             <input type="password" id="signupPassword" placeholder="Senha" required>
             <button id="signupBtn">Cadastrar</button>
-        </div> -->
+        </div>  -->
 
-        <div id="sorteioSection" class="signupName" style="display: none;">
-            <h2>Bem-vindo, <span id="Name"></span>!</h2>
+        <div id="sorteioSection"  style="display: none;">
+            <h2>Bem-vindo, <span  id="userName"></span>!</h2>
             <button id="sortearBtn">Sortear Amigo Secreto</button>
-            <p id="amigoSorteado"></p>
+            <p style="color:chartreuse" id="amigoSorteado"></p>
         </div>
 
-        <!-- <div id="adminPanel" class="container" style="display: none;">
+        <!-- <div id="adminPanel" style="display: none;">
             <h2>Painel de Administração</h2>
             <button id="adminSortearBtn">Realizar Sorteio</button>
             <table id="participantesTable">
